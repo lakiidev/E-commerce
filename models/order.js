@@ -1,6 +1,7 @@
 const db = require("../db");
 const moment = require("moment");
 const pgp = require("pg-promise")({ capSQL: true });
+const OrderItem = require("./orderItem");
 
 module.exports = class OrdreModel {
   constructor(data = {}) {
@@ -12,46 +13,80 @@ module.exports = class OrdreModel {
     this.userId = data.userId || null;
   }
 
-  addItems(items)
-  {
-    this.items = items.app(item =>)
+  addItems(items) {
+    this.items = items.app((item) => new OrderItem(item));
   }
 
-  async create()
-  {
+  async create() {
     try {
-        const { items, ...order } = this;
+      const { items, ...order } = this;
 
-      const statement = pgp.helpers.insert(order, null, 'orders') + ' RETURNING *';
+      const statement =
+        pgp.helpers.insert(order, null, "orders") + " RETURNING *";
       const result = await db.query(statement);
 
       if (result.rows?.length) {
-
         Object.assign(this, result.rows[0]);
 
         return result.rows[0];
       }
       return;
     } catch (error) {
-        throw new Error(err)
+      throw new Error(error);
     }
   }
   async update(data) {
     try {
-        
-        const condition = pgp.as.format("WHERE id= ${id} RETURNING *",{id:this.id})
-        const query = pgp.helpers.update(data,null,'orders')+ condition;
-        const result = await db.query(statement);
+      const condition = pgp.as.format("WHERE id= ${id} RETURNING *", {
+        id: this.id,
+      });
+      const query = pgp.helpers.update(data, null, "orders") + condition;
+      const result = await db.query(statement);
 
-        if(query.rows?.length)
-        {
-            return result.rows[0];
-        }
+      if (query.rows?.length) {
+        return result.rows[0];
+      }
 
-        return null;
-
+      return null;
     } catch (error) {
-        throw new Error(err);
+      throw new Error(error);
+    }
+  }
+
+  static async findByUser(userId) {
+    try {
+      const query = `SELECT * FROM orders WHER "userId= $1`;
+      const params = [userId];
+
+      const result = await db.query(query, params);
+
+      if (result.rows?.length) {
+        return result.rows[0];
+      }
+
+      return null;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  static async findById(orderId) {
+    try {
+      const query = `SELECT *
+                         FROM orders
+                         WHERE id = $1`;
+
+      const params = [orderId];
+
+      const result = await db.query(query, params);
+
+      if (result.rows?.length) {
+        return result.rows[0];
+      }
+
+      return;
+    } catch (error) {
+      throw new Error(error);
     }
   }
 };
