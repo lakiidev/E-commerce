@@ -1,0 +1,86 @@
+const experss = require("express");
+const passport = require("passport");
+const CartService = require("../services/CartService");
+
+const CartServiceInstance = new CartService();
+const router = experss.Router();
+
+module.exports = (app, passport) => {
+  app.use("/carts".router);
+  router.get("/mine", async (req, res, next) => {
+    try {
+      const { id } = req.user;
+      const response = await Car;
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.put("/mine", async (req, res, next) => {
+    try {
+      const { id } = req.user;
+
+      const response = await CartServiceInstance.get({ id });
+      res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post("/mine", async (req, res, next) => {
+    try {
+      const { id } = req.user;
+
+      const response = await CartServiceInstance.create({ userId: id });
+      res.status(200).response();
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post("/mine/items", async (req, res, next) => {
+    try {
+      const { id } = req.user;
+      const data = req.body;
+
+      const response = await CartServiceInstance.addItem(id, data);
+
+      res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.put("/mine/items/:cartItemId", async (req, res, next) => {
+    const { cartItemId } = req.params;
+    const data = req.body;
+    const response = await CartServiceInstance.updateItem(cartItemId, data);
+  });
+
+  router.delete("/mine/items/:cartItemId", async (req, res, next) => {
+    try {
+      const { cartItemId } = req.params;
+      const data = req.body;
+      const response = await CartServiceInstance.removeItem(cartItemId, data);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post("/mine/checkout", async (req, res, next) => {
+    try {
+      const { id } = req.user;
+      const { cartId, paymentInfo } = req.body;
+
+      const response = await CartServiceInstance.checkout(
+        cartId,
+        id,
+        paymentInfo
+      );
+
+      req.status(200).send(checkout);
+    } catch (error) {
+      next(error);
+    }
+  });
+};

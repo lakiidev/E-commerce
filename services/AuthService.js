@@ -13,7 +13,7 @@ module.exports = class AuthService {
       const hashedPassword = await bcrypt.hash(password, 10);
       return await UserModelInstance.create(data);
     } catch (error) {
-      throw createError(500, err);
+      throw createError(500, error);
     }
   }
   async login(data) {
@@ -29,7 +29,7 @@ module.exports = class AuthService {
       }
       return user;
     } catch (error) {
-      throw createError(500, err);
+      throw createError(500, error);
     }
   }
 };

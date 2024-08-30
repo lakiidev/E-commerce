@@ -5,7 +5,7 @@ const AuthService = require("../services/AuthService");
 const AuthServiceInstance = new AuthService();
 
 module.exports = (app, passport) => {
-  app.use("/auth", router);
+  app.use("/api/auth", router);
 
   router.post("/register", async (req, res, next) => {
     try {
@@ -16,17 +16,19 @@ module.exports = (app, passport) => {
       next(error);
     }
   });
-  router.login(
+  router.post(
     "/login",
-    passport.assport.authenticate("local"),
+    passport.authenticate("local"),
     async (req, res, next) => {
       try {
-        const { username, password } = req.body;
-        const response = await AuthServiceInstance({
-          email: username,
+        const { email, password } = req.body;
+
+        const response = await AuthServiceInstance.login({
+          email,
           password,
         });
-        res.status.send();
+
+        res.status(200).send(response);
       } catch (error) {
         next(error);
       }
