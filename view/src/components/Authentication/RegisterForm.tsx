@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "sonner";
 
 interface RegisterFormProps {}
 type RegisterData = z.infer<typeof registerSchema>;
@@ -28,6 +29,18 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
         email: data.email,
         password: data.password,
       }),
+    onSuccess: () => {
+      toast.success("Account created successfully");
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = (error.response.data as { message: string })
+          .message;
+        toast.error(errorMessage);
+      } else {
+        toast.error(error.message);
+      }
+    },
   });
   const onSubmit: SubmitHandler<RegisterData> = async (data) => {
     mutation.mutate(data);
@@ -60,7 +73,7 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
         {...register("confirmPassword", { required: true })}
       />
       <p className="font-normal flex gap-2 text-2xl mt-5">
-        Aleready have an account?
+        Already have an account?
         <Link
           className="underline font-semibold text-[#01E3EB] hover:text-[#01E3EB] cursor-pointer"
           to="/login"
