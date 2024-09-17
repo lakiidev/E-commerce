@@ -7,11 +7,13 @@ const Navbar: FC<NavbarProps> = ({}) => {
   const linkStyle = "text-black font-bold";
   return (
     <nav className="mt-10 flex w-full justify-between items-center max-w-[1440px] mx-auto md:px-10 sm:px-2 px-4 z-10 text-black">
-      <h1 className="text-6xl font-bold tracking-tighter">EC</h1>
+      <a href="/" className="text-6xl font-bold tracking-tighter">
+        EC
+      </a>
       <div className="flex items-center justify-end group overflow-hidden">
         <ul className="flex gap-5 text-2xl uppercase tracking-tighter w-0 list-none  overflow-hidden group-hover:w-full transition-all duration-1000 translate-x-[50%] group-hover:translate-x-0 bg-[#F2F2EF] group-hover:p-5 group-hover:pr-10  rounded-full">
           <li>
-            <a className={linkStyle} href="">
+            <a className={linkStyle} href="/">
               Store
             </a>
           </li>
