@@ -5,20 +5,16 @@ import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./routes/Login.tsx";
 import Register from "./routes/Register.tsx";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { useDispatch } from "react-redux";
-
-const dispatch = useDispatch();
+import { checkLoginStatus } from "./store/userSlice/userSlice.ts";
+import store, { AppDispatch } from "./store/store.ts";
+import { Provider } from "react-redux";
+import Navbar from "./components/Navbar.tsx";
+import AddProduct from "./routes/AddProduct.tsx";
+import ProductPage from "./routes/ProductPage.tsx";
 
 // Load user cart on entry to app
-useEffect(() => {
-  async function isLoggedIn() {
-    await dispatch(checkLoginStatus());
-  }
-
-  isLoggedIn();
-}, [dispatch]);
 
 const router = createBrowserRouter([
   {
@@ -33,22 +29,51 @@ const router = createBrowserRouter([
     path: "/register",
     element: <Register />,
   },
+  {
+    path: "/products/add",
+    element: <AddProduct />,
+  },
+  {
+    path: "/products/:id",
+    element: <ProductPage />,
+  },
+  {
+    path: "/cart",
+    element: <div>Cart</div>,
+  },
 ]);
 
-const queryClient = new QueryClient();
+const AppWrapper = ({ children }: { children: React.ReactNode }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    async function isLoggedIn() {
+      await dispatch(checkLoginStatus());
+    }
+    isLoggedIn();
+  }, [dispatch]);
+  return (
+    <div className="w-screen h-screen relative overflow-x-hidden">
+      <div className="fixed inset-0 -z-10 h-full w-full bg-[#FFFAF0] bg-[linear-gradient(to_right,#b4b4b4_0.3px,transparent_1px),linear-gradient(to_bottom,#b4b4b4_0.3px,transparent_1px)] bg-[size:144px_144px]"></div>
+      <Navbar />
+      {children}
+    </div>
+  );
+};
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <Toaster
-        richColors
-        toastOptions={{
-          classNames: {
-            toast: "text-2xl",
-          },
-        }}
-      />
-    </QueryClientProvider>
+    <Provider store={store}>
+      <AppWrapper>
+        <RouterProvider router={router} />
+        <Toaster
+          richColors
+          toastOptions={{
+            classNames: {
+              toast: "text-2xl",
+            },
+          }}
+        />
+      </AppWrapper>
+    </Provider>
   </StrictMode>
 );

@@ -18,7 +18,6 @@ module.exports = class AuthService {
   }
   async login(data) {
     const { email, password } = data;
-    console.log(email);
     try {
       const user = await UserModelInstance.findOneByEmail(email);
       if (!user) {
