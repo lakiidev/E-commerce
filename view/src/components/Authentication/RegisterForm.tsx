@@ -1,11 +1,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerSchema } from "../../validations/register";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+<<<<<<< Updated upstream
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+=======
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { AppDispatch } from "../../store/store";
+import {
+  LoginErrorPayload,
+  registerUser,
+} from "../../store/userSlice/userSlice";
+>>>>>>> Stashed changes
 
 interface RegisterFormProps {}
 type RegisterData = z.infer<typeof registerSchema>;
@@ -21,6 +31,7 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
   } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
   });
+<<<<<<< Updated upstream
   const mutation = useMutation({
     mutationKey: ["register"],
     mutationFn: (data: RegisterData) =>
@@ -31,6 +42,28 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
   });
   const onSubmit: SubmitHandler<RegisterData> = async (data) => {
     mutation.mutate(data);
+=======
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<RegisterData> = async (data) => {
+    try {
+      const resultAction = await dispatch(registerUser(data));
+      if (registerUser.fulfilled.match(resultAction)) {
+        toast.success("Registration successful");
+        navigate("/login");
+        toast.success("You can now login");
+      } else {
+        const errorMessage = (resultAction.payload as LoginErrorPayload)
+          .message;
+        toast.error(errorMessage);
+      }
+    } catch (error: any) {
+      console.log(error);
+      const errorMessage = (error.payload as LoginErrorPayload).message;
+      toast.error(errorMessage);
+    }
+>>>>>>> Stashed changes
   };
 
   return (
