@@ -19,6 +19,7 @@ const { DB } = require("./config");
             name VARCHAR(50) NOT NULL,
             price INT NOT NULL,
             description VARCHAR(50) NOT NULL,
+            image_url VARCHAR(50) NOT NULL,
             createdAt     DATE NOT NULL,
             modifiedAt  DATE NOT NULL
         );
