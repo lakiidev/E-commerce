@@ -1,7 +1,9 @@
 const createError = require("http-errors");
 const UserModel = require("../models/user");
+const ProductsModel = require("../models/product");
 
 const UserModelInstance = new UserModel();
+const ProductsInstance = new ProductsModel();
 
 module.exports = class UserService {
   async get(data) {
