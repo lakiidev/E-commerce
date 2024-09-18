@@ -4,9 +4,10 @@ import { z } from "zod";
 import { loginSchema } from "../../validations/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import axios from "axios";
+import { AppDispatch } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { LoginErrorPayload, loginUser } from "../../store/userSlice/userSlice";
 
 interface LoginFormProps {}
 type LoginData = z.infer<typeof loginSchema>;
@@ -24,31 +25,17 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const mutation = useMutation({
-    mutationKey: ["login"],
-    mutationFn: (data: LoginData) =>
-      axios.post("http://localhost:3000/api/auth/login", {
-        email: data.email,
-        password: data.password,
-      }),
-    onSuccess: () => {
-      toast.success("Successfully logged in. Redirecting...");
+  const onSubmit = async (data: LoginData) => {
+    try {
+      await dispatch(loginUser(data)).unwrap();
+      toast.success("Login successful");
       navigate("/");
-    },
-    onError: (error) => {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = (error.response.data as { message: string })
-          .message;
-        toast.error(errorMessage);
-      } else {
-        toast.error(error.message);
-      }
-    },
-  });
-
-  const onSubmit = (data: LoginData) => {
-    mutation.mutate(data);
+    } catch (error: any) {
+      const errorMessage = (error as LoginErrorPayload).message;
+      toast.error(errorMessage);
+    }
   };
 
   return (

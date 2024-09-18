@@ -5,13 +5,13 @@ const UserService = require("../services/UserService");
 const UserServiceInstance = new UserService();
 
 module.exports = (app) => {
-  app.use("/users", router);
+  app.use("api/users", router);
 
   router.get("/:userId", async (req, res, next) => {
     try {
       const { userId } = req.params;
       const response = await UserServiceInstance.get({ id: userId });
-      res.status(200).response(response);
+      res.status(200).send(response);
     } catch (error) {
       next(error);
     }
@@ -21,11 +21,11 @@ module.exports = (app) => {
     try {
       const { userId } = req.params;
       const data = req.body;
-      const resposne = await UserServiceInstance.update({
+      const response = await UserServiceInstance.update({
         id: userId,
         ...data,
       });
-      res.status(200).response(resposne);
+      res.status(200).send(response);
     } catch (error) {
       next(error);
     }
