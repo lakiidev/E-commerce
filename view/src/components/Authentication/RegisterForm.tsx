@@ -1,11 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerSchema } from "../../validations/register";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { AppDispatch } from "../../store/store";
+import {
+  LoginErrorPayload,
+  registerUser,
+} from "../../store/userSlice/userSlice";
+=======
 import { toast } from "sonner";
 
 interface RegisterFormProps {}
@@ -22,28 +29,27 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
   } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
   });
-  const mutation = useMutation({
-    mutationKey: ["register"],
-    mutationFn: (data: RegisterData) =>
-      axios.post("http://localhost:3000/api/auth/register", {
-        email: data.email,
-        password: data.password,
-      }),
-    onSuccess: () => {
-      toast.success("Account created successfully");
-    },
-    onError: (error) => {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = (error.response.data as { message: string })
+=======
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<RegisterData> = async (data) => {
+    try {
+      const resultAction = await dispatch(registerUser(data));
+      if (registerUser.fulfilled.match(resultAction)) {
+        toast.success("Registration successful");
+        navigate("/login");
+        toast.success("You can now login");
+      } else {
+        const errorMessage = (resultAction.payload as LoginErrorPayload)
           .message;
         toast.error(errorMessage);
-      } else {
-        toast.error(error.message);
       }
-    },
-  });
-  const onSubmit: SubmitHandler<RegisterData> = async (data) => {
-    mutation.mutate(data);
+    } catch (error: any) {
+      console.log(error);
+      const errorMessage = (error.payload as LoginErrorPayload).message;
+      toast.error(errorMessage);
+    }
   };
 
   return (
