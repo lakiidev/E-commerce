@@ -18,10 +18,11 @@ module.exports = class AuthService {
   }
   async login(data) {
     const { email, password } = data;
+    console.log(email);
     try {
       const user = await UserModelInstance.findOneByEmail(email);
       if (!user) {
-        throw createError(401, "Incorrect useraname or password");
+        throw createError(401, "Account doesn't exists");
       }
       const isCorrectPassword = await bcrypt.compare(password, user.password);
       if (!isCorrectPassword) {

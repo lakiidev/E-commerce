@@ -4,10 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerSchema } from "../../validations/register";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-<<<<<<< Updated upstream
-import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-=======
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { AppDispatch } from "../../store/store";
@@ -15,7 +12,8 @@ import {
   LoginErrorPayload,
   registerUser,
 } from "../../store/userSlice/userSlice";
->>>>>>> Stashed changes
+=======
+import { toast } from "sonner";
 
 interface RegisterFormProps {}
 type RegisterData = z.infer<typeof registerSchema>;
@@ -31,17 +29,6 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
   } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
   });
-<<<<<<< Updated upstream
-  const mutation = useMutation({
-    mutationKey: ["register"],
-    mutationFn: (data: RegisterData) =>
-      axios.post("http://localhost:3000/api/auth/register", {
-        email: data.email,
-        password: data.password,
-      }),
-  });
-  const onSubmit: SubmitHandler<RegisterData> = async (data) => {
-    mutation.mutate(data);
 =======
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -63,7 +50,6 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
       const errorMessage = (error.payload as LoginErrorPayload).message;
       toast.error(errorMessage);
     }
->>>>>>> Stashed changes
   };
 
   return (
@@ -93,7 +79,7 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
         {...register("confirmPassword", { required: true })}
       />
       <p className="font-normal flex gap-2 text-2xl mt-5">
-        Aleready have an account?
+        Already have an account?
         <Link
           className="underline font-semibold text-[#01E3EB] hover:text-[#01E3EB] cursor-pointer"
           to="/login"

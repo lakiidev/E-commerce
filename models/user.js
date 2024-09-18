@@ -7,7 +7,7 @@ module.exports = class UserModel {
       const query = pgp.helpers.insert(data, null, "users") + "RETURNING *";
       const result = await db.query(query);
 
-      if (result.rows?.lenght) {
+      if (result.rows?.length) {
         return result.rows[0];
       }
       return;
@@ -24,7 +24,7 @@ module.exports = class UserModel {
 
       const result = db.query(query);
 
-      if (result.rows?.lenght) {
+      if (result.rows?.length) {
         return result.rows[0];
       }
       return;
@@ -37,7 +37,7 @@ module.exports = class UserModel {
       const query = `SELECT * FROM users WHERE email = $1`;
       const params = [email];
       const result = await db.query(query, params);
-      if (result.rows?.lenght) {
+      if (result.rows?.length) {
         return result.rows[0];
       }
       return;
@@ -50,7 +50,7 @@ module.exports = class UserModel {
       const query = `SELECT * FROM users WHERE id = $1`;
       const params = [id];
       const result = await db.query(query, params);
-      if (result.rows?.lenght) {
+      if (result.rows?.length) {
         return result.rows[0];
       }
       return;
