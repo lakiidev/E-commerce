@@ -70,15 +70,22 @@ module.exports = (app, passport) => {
   router.post("/mine/checkout", async (req, res, next) => {
     try {
       const { id } = req.user;
-      const { cartId, paymentInfo } = req.body;
+      const { total } = req.body;
 
-      const response = await CartServiceInstance.checkout(
-        cartId,
-        id,
-        paymentInfo
-      );
+      const response = await CartServiceInstance.checkout(total);
+      res.status(200).send({ clientSecret: response.client_secret });
+    } catch (error) {
+      next(error);
+    }
+  });
 
-      req.status(200).send(checkout);
+  router.get("/mine/config", async (req, res, next) => {
+    try {
+      const { id } = req.user;
+      if (id) {
+        const response = await CartServiceInstance.getConfig(id);
+        res.status(200).send(response);
+      }
     } catch (error) {
       next(error);
     }

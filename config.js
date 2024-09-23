@@ -8,4 +8,6 @@ module.exports = {
     PGPORT: process.env.PGPORT,
   },
   SESSION_SECRET: process.env.SESSION_SECRET,
+  STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
 };
