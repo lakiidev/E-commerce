@@ -56,28 +56,19 @@ export const addItem = createAsyncThunk(
   }
 );
 
-export const checkoutCart = createAsyncThunk(
-  "cart/checkoutCart",
-  async (
-    {
-      cartId,
-      paymentInfo,
-    }: {
-      cartId: string;
-      paymentInfo: string;
-    },
-    thunkAPI
-  ) => {
-    try {
-      const response = await checkout(cartId, paymentInfo);
-      return {
-        order: response,
-      };
-    } catch (err) {
-      throw err;
-    }
-  }
-);
+// export const checkoutCart = createAsyncThunk(
+//   "cart/checkoutCart",
+//   async ({ total: number }, thunkAPI) => {
+//     try {
+//       const response = await checkout(total);
+//       return {
+//         order: response,
+//       };
+//     } catch (err) {
+//       throw err;
+//     }
+//   }
+// );
 
 export const loadCart = createAsyncThunk(
   "cart/loadCart",

@@ -13,6 +13,10 @@ import { Provider } from "react-redux";
 import Navbar from "./components/Navbar.tsx";
 import AddProduct from "./routes/AddProduct.tsx";
 import ProductPage from "./routes/ProductPage.tsx";
+import Cart from "./routes/Cart.tsx";
+import ProtectedRoute from "./routes/ProtectedRoute.tsx";
+import Checkout from "./routes/Checkout.tsx";
+import Success from "./routes/Success.tsx";
 
 // Load user cart on entry to app
 
@@ -39,7 +43,30 @@ const router = createBrowserRouter([
   },
   {
     path: "/cart",
-    element: <div>Cart</div>,
+    element: (
+      <ProtectedRoute>
+        <Cart />
+      </ProtectedRoute>
+    ),
+    loader: protectedRouteLoader,
+  },
+  {
+    path: "/checkout",
+    element: (
+      <ProtectedRoute checkout>
+        <Checkout />
+      </ProtectedRoute>
+    ),
+    loader: protectedRouteLoader,
+  },
+  {
+    path: "/success",
+    element: (
+      <ProtectedRoute checkout>
+        <Success />
+      </ProtectedRoute>
+    ),
+    loader: protectedRouteLoader,
   },
 ]);
 
