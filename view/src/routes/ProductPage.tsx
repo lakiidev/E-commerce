@@ -15,7 +15,7 @@ import { addItem } from "../store/cartSlice/cartSlice";
 const ProductPage = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
-  const [count, setCount] = useState<number>(0);
+  const [count, setCount] = useState<number>(1);
   const { isLoggedIn } = useSelector((state: RootState) => state.user);
   const pendingProduct = useSelector(
     (state: RootState) => state.pendingProduct
@@ -51,7 +51,7 @@ const ProductPage = () => {
   //prduct to be added to the cart after login
   const purchaseHandler = async () => {
     //1. Check if the user is logged in
-    //2. If the user is logged in, add the product to the cart\
+    //2. If the user is logged in, add the product to the cart
     //3. If the user is not logged in, redirect the user to the login page, but save the product to be added to the cart after login
     //4. If login is successful, add the product to the cart and redirect the user to the cart page
     if (!isLoggedIn) {
@@ -60,6 +60,7 @@ const ProductPage = () => {
       const cartItem: CartItem = {
         ...product,
         quantity: count,
+        cartitemid: product.id,
       };
       dispatch(setPendingProduct(cartItem));
       navigate("/login");
@@ -69,7 +70,7 @@ const ProductPage = () => {
     //add the product to the cart
     else {
       dispatch(addItem({ product, qty: count }));
-      navigate("/cart");
+      toast.success(`Added ${count} ${product.name}(s) to the cart`);
     }
   };
 

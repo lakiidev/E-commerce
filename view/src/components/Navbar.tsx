@@ -2,9 +2,12 @@ import { FC } from "react";
 import { LuMenu } from "react-icons/lu";
 interface NavbarProps {}
 import { PiShoppingCartSimpleBold } from "react-icons/pi";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 const Navbar: FC<NavbarProps> = ({}) => {
   const linkStyle = "text-black font-bold";
+  const { items } = useSelector((state: RootState) => state.cart);
   return (
     <nav className="mt-10 flex w-full justify-between items-center max-w-[1440px] mx-auto md:px-10 sm:px-2 px-4 z-10 text-black">
       <a href="/" className="text-6xl font-bold tracking-tighter">
@@ -30,12 +33,12 @@ const Navbar: FC<NavbarProps> = ({}) => {
           <li>
             <a
               className={`${linkStyle} flex items-center gap-2 relative`}
-              href=""
+              href="/cart"
             >
               Cart
               <PiShoppingCartSimpleBold />
               <div className="absolute text-lg text-center bg-[#01E3EB] w-6 h-6 -right-4 -bottom-2 rounded-full">
-                01
+                {items.reduce((acc, item) => acc + item.quantity, 0) || 0}
               </div>
             </a>
           </li>

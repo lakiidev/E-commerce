@@ -9,6 +9,7 @@ import { Blur } from "transitions-kit";
 import { Link } from "react-router-dom";
 import { LuArrowDownRight } from "react-icons/lu";
 import { loadProducts } from "./store/productsSlice/productsSlice";
+import { loadCart } from "./store/cartSlice/cartSlice";
 
 function App() {
   //get all the products from the server
@@ -19,6 +20,7 @@ function App() {
   const fetchProducts = async () => {
     try {
       const result = await dispatch(loadProducts());
+      await dispatch(loadCart());
     } catch (error) {
       toast.error("Failed to fetch products");
     }
@@ -43,7 +45,7 @@ function App() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20 auto-rows-fr w-full gap-y-36 pb-20">
           {memoizedProducts.map((product) => (
-            <div className="space-y-5">
+            <div className="space-y-5" key={product.id}>
               <div
                 key={product.id}
                 className="flex flex-col gap-4 bg-[#F2F2EF] aspect-square items-center justify-center"

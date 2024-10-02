@@ -5,12 +5,13 @@ const CartService = require("../services/CartService");
 const CartServiceInstance = new CartService();
 const router = experss.Router();
 
-module.exports = (app, passport) => {
-  app.use("/carts".router);
+module.exports = (app) => {
+  app.use("/api/carts", router);
   router.get("/mine", async (req, res, next) => {
     try {
       const { id } = req.user;
-      const response = await Car;
+      const response = await CartServiceInstance.loadCart(id);
+      res.status(200).send(response);
     } catch (error) {
       next(error);
     }
@@ -30,9 +31,8 @@ module.exports = (app, passport) => {
   router.post("/mine", async (req, res, next) => {
     try {
       const { id } = req.user;
-
-      const response = await CartServiceInstance.create({ userId: id });
-      res.status(200).response();
+      const response = await CartServiceInstance.create({ userid: id });
+      res.status(200).send(response);
     } catch (error) {
       next(error);
     }
@@ -42,9 +42,7 @@ module.exports = (app, passport) => {
     try {
       const { id } = req.user;
       const data = req.body;
-
       const response = await CartServiceInstance.addItem(id, data);
-
       res.status(200).send(response);
     } catch (error) {
       next(error);
@@ -52,16 +50,21 @@ module.exports = (app, passport) => {
   });
 
   router.put("/mine/items/:cartItemId", async (req, res, next) => {
-    const { cartItemId } = req.params;
-    const data = req.body;
-    const response = await CartServiceInstance.updateItem(cartItemId, data);
+    try {
+      const { cartItemId } = req.params;
+      const data = req.body;
+      const response = await CartServiceInstance.updateItem(cartItemId, data);
+      res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
   });
 
   router.delete("/mine/items/:cartItemId", async (req, res, next) => {
     try {
       const { cartItemId } = req.params;
-      const data = req.body;
-      const response = await CartServiceInstance.removeItem(cartItemId, data);
+      const response = await CartServiceInstance.removeItem(cartItemId);
+      res.status(200).send(response);
     } catch (error) {
       next(error);
     }
@@ -71,8 +74,7 @@ module.exports = (app, passport) => {
     try {
       const { id } = req.user;
       const { total } = req.body;
-
-      const response = await CartServiceInstance.checkout(total);
+      const response = await CartServiceInstance.checkout(id, total);
       res.status(200).send({ clientSecret: response.client_secret });
     } catch (error) {
       next(error);

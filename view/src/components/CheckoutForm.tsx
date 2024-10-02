@@ -3,8 +3,11 @@ import {
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import { FC, useState } from "react";
+import { FC, useState, FormEvent } from "react";
 import { toast } from "sonner";
+import { AppDispatch } from "../store/store";
+import { useDispatch } from "react-redux";
+import { createOrders } from "../store/ordersSlice/ordersSlice";
 
 interface CheckoutFormProps {
   total: number;
@@ -14,7 +17,7 @@ const CheckoutForm: FC<CheckoutFormProps> = ({ total }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!stripe || !elements) {
       return;

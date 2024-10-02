@@ -1,6 +1,4 @@
-const createError = require("http-errors");
 const CartModel = require("../models/cart");
-const OrderModel = require("../models/order");
 const CartItemModel = require("../models/cartItem");
 
 const { STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY } = require("../config");
@@ -36,7 +34,7 @@ module.exports = class CartService {
       const cart = await CartModel.findOneByUser(userId);
       const existingItems = await CartItemModel.find(cart.id);
       const existingItem = existingItems.find(
-        (cartItem) => cartItem.id === item.productId
+        (cartItem) => cartItem.id === item.product.id
       );
       if (existingItem) {
         const updatedQty = existingItem.quantity + item.qty;
@@ -49,8 +47,11 @@ module.exports = class CartService {
         return updatedItem;
       } else {
         const newItem = await CartItemModel.create({
-          cartId: cart.id,
-          ...item,
+          cartid: cart.id,
+          quantity: item.qty,
+          productid: item.product.id,
+          createdat: new Date() || item.product.createdat,
+          modifiedat: new Date() || item.product.modifiedat,
         });
         return newItem;
       }
@@ -78,7 +79,7 @@ module.exports = class CartService {
     }
   }
 
-  async checkout(total) {
+  async checkout(userId, total) {
     try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: total * 100,
