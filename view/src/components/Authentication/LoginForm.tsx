@@ -5,9 +5,11 @@ import { loginSchema } from "../../validations/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { AppDispatch } from "../../store/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
+import { useDispatch, useSelector } from "react-redux";
 import { LoginErrorPayload, loginUser } from "../../store/userSlice/userSlice";
+import { addItem } from "../../store/cartSlice/cartSlice";
+import { clearPendingPurchase } from "../../store/productsSlice/pendingProductSlice";
 
 interface LoginFormProps {}
 type LoginData = z.infer<typeof loginSchema>;
@@ -26,12 +28,37 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const pendingProduct = useSelector(
+    (state: RootState) => state.pendingProduct
+  );
 
   const onSubmit = async (data: LoginData) => {
     try {
       await dispatch(loginUser(data)).unwrap();
       toast.success("Login successful");
-      navigate("/");
+      if (pendingProduct) {
+        if (
+          pendingProduct?.cartItem?.id &&
+          pendingProduct.cartItem?.name &&
+          pendingProduct.cartItem?.price &&
+          pendingProduct.cartItem?.image_url &&
+          pendingProduct.cartItem?.quantity
+        ) {
+          const item = {
+            product: {
+              ...pendingProduct.cartItem,
+            },
+            qty: pendingProduct.cartItem.quantity,
+          };
+          dispatch(addItem(item));
+          dispatch(clearPendingPurchase());
+          toast.success("Product added to cart");
+        }
+
+        navigate("/cart");
+      } else {
+        navigate("/");
+      }
     } catch (error: any) {
       const errorMessage = (error as LoginErrorPayload).message;
       toast.error(errorMessage);

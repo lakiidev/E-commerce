@@ -1,4 +1,4 @@
-const db = require("db");
+const db = require("../db");
 const pgp = require("pg-promise")({ capSQL: true });
 
 const moment = require("moment");
@@ -7,7 +7,6 @@ module.exports = class CartModel {
   constructor(data = {}) {
     this.cretatedAt = data.cretatedAt || moment.utc().toISOString();
     this.modifiedAt = moment.utc().toISOString();
-    this.converted = data.converted || null;
     this.isActive = data.isActive || true;
   }
   async create(userId) {
@@ -46,7 +45,7 @@ module.exports = class CartModel {
                      WHERE id = $1
         `;
       const params = [id];
-      consolet = await db.query(query, params);
+      const result = await db.query(query, params);
 
       if (result.rows?.length) {
         return result.rows[0];

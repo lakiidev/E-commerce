@@ -1,17 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchOrder, fetchOrders } from "../../controller/order";
+import { createOrder, fetchOrder, fetchOrders } from "../../controller/order";
 import { checkoutCart } from "../cartSlice/cartSlice";
 
 const initialState = {
-  orders: [],
-  order: {
-    id: "",
-    items: [],
-    total: 0,
-  },
-  isLoadingOrder: false,
-  isLoadingOrders: false,
-  error: undefined,
+  orders: [
+    {
+      id: "",
+      userid: "",
+      total: 0,
+      status: "",
+      items: [],
+    },
+  ],
 };
 
 export const loadOrder = createAsyncThunk(
@@ -41,6 +41,19 @@ export const loadOrders = createAsyncThunk(
     }
   }
 );
+export const createOrders = createAsyncThunk(
+  "order/createOrders",
+  async (paymentIntentId: string, thunkAPI) => {
+    try {
+      const response = await createOrder(paymentIntentId);
+      return {
+        orders: response,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 
 const orderSlice = createSlice({
   name: "order",
@@ -48,17 +61,17 @@ const orderSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(checkoutCart.fulfilled, (state, action) => {
-        const { order } = action.payload;
-        state.order = order;
+      .addCase(createOrders.fulfilled, (state, action) => {
+        const { orders } = action.payload;
+        state.orders.push(orders);
       })
       .addCase(loadOrder.fulfilled, (state, action) => {
         const { order } = action.payload;
-        state.order = order;
+        state.orders[order.id] = order;
       })
       .addCase(loadOrders.fulfilled, (state, action) => {
         const { orders } = action.payload;
-        state.orders = orders;
+        console.log(orders);
       });
   },
 });

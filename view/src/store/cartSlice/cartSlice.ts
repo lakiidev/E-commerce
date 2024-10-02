@@ -4,23 +4,14 @@ import {
   checkout,
   fetchCart,
   removeFromCart,
+  updateCart,
 } from "../../controller/cart";
 import { checkLoginStatus } from "../userSlice/userSlice";
-
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  cartItemId: any;
-  qty: number;
-};
+import { CartItem, Product } from "../../types";
 
 const initialState = {
-  cart: {
-    items: [] as CartItem[],
-    total: 0,
-  },
+  cart: {},
+  items: [] as CartItem[],
   isLoadingCart: false,
   error: undefined,
 };
@@ -32,22 +23,17 @@ export const addItem = createAsyncThunk(
       product,
       qty,
     }: {
-      product: {
-        id: number;
-        name: string;
-        price: number;
-        image_url: string;
-      };
+      product: Product;
       qty: number;
     },
     thunkAPI
   ) => {
     try {
-      const response = await addToCart(product.id, qty);
+      const response = await addToCart(product, qty);
       const item = {
         ...product,
         cartItemId: response.id,
-        qty,
+        quantity: qty,
       };
       return { item };
     } catch (error) {
@@ -55,20 +41,58 @@ export const addItem = createAsyncThunk(
     }
   }
 );
+export const updateItem = createAsyncThunk(
+  "cart/updateItem",
+  async ({ product, qty }: { product: CartItem; qty: number }, thunkAPI) => {
+    try {
+      const response = await updateCart(product.cartitemid, qty);
+      return {
+        ...product,
+        cartItemId: response.id,
+        quantity: qty,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+);
 
-// export const checkoutCart = createAsyncThunk(
-//   "cart/checkoutCart",
-//   async ({ total: number }, thunkAPI) => {
-//     try {
-//       const response = await checkout(total);
-//       return {
-//         order: response,
-//       };
-//     } catch (err) {
-//       throw err;
-//     }
-//   }
-// );
+export const removeItem = createAsyncThunk(
+  "cart/removeItem",
+  async (cartItemId: number, thunkAPI) => {
+    try {
+      await removeFromCart(cartItemId);
+      return {
+        item: cartItemId,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+);
+
+export const checkoutCart = createAsyncThunk(
+  "cart/checkoutCart",
+  async (
+    {
+      cartId,
+      paymentInfo,
+    }: {
+      cartId: string;
+      paymentInfo: string;
+    },
+    thunkAPI
+  ) => {
+    try {
+      const response = await checkout(cartId, paymentInfo);
+      return {
+        order: response,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+);
 
 export const loadCart = createAsyncThunk(
   "cart/loadCart",
@@ -84,20 +108,6 @@ export const loadCart = createAsyncThunk(
   }
 );
 
-export const removeItem = createAsyncThunk(
-  "cart/removeItem",
-  async (cartItemId: string, thunkAPI) => {
-    try {
-      await removeFromCart(cartItemId);
-      return {
-        item: cartItemId,
-      };
-    } catch (err) {
-      throw err;
-    }
-  }
-);
-
 const cartSlice = createSlice({
   name: "cart",
   initialState,
@@ -106,8 +116,17 @@ const cartSlice = createSlice({
     builder
       .addCase(addItem.fulfilled, (state, action) => {
         const { item } = action.payload;
-        state.cart.items.push(item as CartItem);
+        state.items.push(item as unknown as CartItem);
         state.isLoadingCart = false;
+      })
+      .addCase(updateItem.fulfilled, (state, action) => {
+        const { cartItemId, quantity } = action.payload;
+        const itemIndex = state.items.findIndex(
+          (item) => item.cartitemid === cartItemId
+        );
+        if (itemIndex !== -1) {
+          state.items[itemIndex].quantity = quantity;
+        }
       })
       .addCase(checkLoginStatus.fulfilled, (state, action) => {
         const { cart } = action.payload;
@@ -121,8 +140,8 @@ const cartSlice = createSlice({
       })
       .addCase(removeItem.fulfilled, (state, action) => {
         const { item } = action.payload;
-        state.cart.items = state.cart.items.filter(
-          (product) => product.cartItemId !== item
+        state.items = state.items.filter(
+          (product) => product.cartitemid !== item
         );
         state.isLoadingCart = false;
       })

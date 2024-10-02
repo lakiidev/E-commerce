@@ -3,21 +3,10 @@ const moment = require("moment");
 const pgp = require("pg-promise")({ capSQL: true });
 
 module.exports = class OrderItemModel {
-  constructor(data = {}) {
-    this.createdAt = data.created || moment.utc().toISOString();
-    this.modifiedAt = moment.utc().toISOString();
-    this.description = data.description;
-    this.name = data.name;
-    this.price = data.price || 0;
-    this.productId = data.id;
-    this.quantity = data.quantity | 1;
-    this.orderId = data.orderId || null;
-  }
-
   async create(data) {
     try {
       const query =
-        pgp.helpers.insert(data, null, "orderItems") + "RETURNING *";
+        pgp.helpers.insert(data, null, "orderitems") + "RETURNING *";
       const result = await db.query(query);
 
       if (result.rows?.length) {

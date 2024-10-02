@@ -19,6 +19,18 @@ import Checkout from "./routes/Checkout.tsx";
 import Success from "./routes/Success.tsx";
 
 // Load user cart on entry to app
+export async function protectedRouteLoader() {
+  const dispatch = store.dispatch as AppDispatch;
+  const response = await dispatch(checkLoginStatus());
+  if (checkLoginStatus.fulfilled.match(response)) {
+    return {
+      isLoggedIn: (response.payload as { isLoggedIn: boolean }).isLoggedIn,
+    };
+  }
+  return {
+    isLoggedIn: false,
+  };
+}
 
 const router = createBrowserRouter([
   {
@@ -78,6 +90,7 @@ const AppWrapper = ({ children }: { children: React.ReactNode }) => {
     }
     isLoggedIn();
   }, [dispatch]);
+
   return (
     <div className="w-screen h-screen relative overflow-x-hidden">
       <div className="fixed inset-0 -z-10 h-full w-full bg-[#FFFAF0] bg-[linear-gradient(to_right,#b4b4b4_0.3px,transparent_1px),linear-gradient(to_bottom,#b4b4b4_0.3px,transparent_1px)] bg-[size:144px_144px]"></div>

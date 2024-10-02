@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Product } from "../types";
 
 axios.defaults.baseURL = "http://localhost:3000/api";
 axios.defaults.withCredentials = true;
@@ -12,9 +13,9 @@ export const fetchCart = async () => {
   }
 };
 
-export const addToCart = async (productId: number, qty: number) => {
+export const addToCart = async (product: Product, qty: number) => {
   try {
-    const response = await axios.post(`carts/mine/items`, { productId, qty });
+    const response = await axios.post(`carts/mine/items`, { product, qty });
     return response.data;
   } catch (error: any) {
     throw error.response.data;
@@ -42,10 +43,11 @@ export const removeFromCart = async (cartItemId: number) => {
   }
 };
 
-export const checkout = async (total: number) => {
+export const checkout = async (cartId: string, paymentInfo: string) => {
   try {
     const response = await axios.post(`carts/mine/checkout`, {
-      total,
+      cartId,
+      paymentInfo,
     });
 
     return response.data;

@@ -12,8 +12,6 @@ import {
   LoginErrorPayload,
   registerUser,
 } from "../../store/userSlice/userSlice";
-=======
-import { toast } from "sonner";
 
 interface RegisterFormProps {}
 type RegisterData = z.infer<typeof registerSchema>;
@@ -29,7 +27,7 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
   } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
   });
-=======
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -46,7 +44,6 @@ const RegisterForm: FC<RegisterFormProps> = ({}) => {
         toast.error(errorMessage);
       }
     } catch (error: any) {
-      console.log(error);
       const errorMessage = (error.payload as LoginErrorPayload).message;
       toast.error(errorMessage);
     }

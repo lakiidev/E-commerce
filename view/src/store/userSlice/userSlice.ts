@@ -102,7 +102,6 @@ export const registerUser = createAsyncThunk(
       if (axios.isAxiosError(error)) {
         const errorMessage =
           error.response?.data.message || "An unexpected error occurred";
-        console.log(errorMessage);
         return thunkAPI.rejectWithValue({ message: errorMessage });
       }
       return thunkAPI.rejectWithValue({ message: "An unknown error occurred" });
@@ -144,7 +143,6 @@ export const userSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         // state.isLoggedIn = true;
         // state.user = action.payload.user;
-        console.log("User registered successfully");
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.error =
