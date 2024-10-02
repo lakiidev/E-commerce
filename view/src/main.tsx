@@ -17,6 +17,9 @@ import Cart from "./routes/Cart.tsx";
 import ProtectedRoute from "./routes/ProtectedRoute.tsx";
 import Checkout from "./routes/Checkout.tsx";
 import Success from "./routes/Success.tsx";
+import Orders from "./routes/Orders.tsx";
+import OrderPage from "./routes/OrderPage.tsx";
+import EditProfile from "./routes/EditProfile.tsx";
 
 // Load user cart on entry to app
 export async function protectedRouteLoader() {
@@ -76,6 +79,33 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute checkout>
         <Success />
+      </ProtectedRoute>
+    ),
+    loader: protectedRouteLoader,
+  },
+  {
+    path: "/orders",
+    element: (
+      <ProtectedRoute>
+        <Orders />
+      </ProtectedRoute>
+    ),
+    loader: protectedRouteLoader,
+  },
+  {
+    path: "/orders/:id",
+    element: (
+      <ProtectedRoute>
+        <OrderPage />
+      </ProtectedRoute>
+    ),
+    loader: protectedRouteLoader,
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute>
+        <EditProfile />
       </ProtectedRoute>
     ),
     loader: protectedRouteLoader,

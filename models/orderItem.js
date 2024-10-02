@@ -23,11 +23,11 @@ module.exports = class OrderItemModel {
     try {
       const query = `SELECT 
                             oi.quantity,
-                            oi.id AS "cartItemId", 
+                            oi.id AS "cartitemid", 
                             p.*
-                         FROM "orderItems" oi
-                         INNER JOIN products p ON p.id = oi."productId"
-                         WHERE "orderId" = $1`;
+                         FROM "orderitems" oi
+                         INNER JOIN products p ON p.id = oi."productid"
+                         WHERE "orderid" = $1`;
       const params = [orderId];
 
       const result = await db.query(query, params);

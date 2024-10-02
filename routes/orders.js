@@ -30,11 +30,11 @@ module.exports = (app) => {
     }
   });
 
-  router.get("/:ordrerId", async (req, res, next) => {
+  router.get("/:orderId", async (req, res, next) => {
     try {
-      const { id } = req.res;
-
-      const response = await OrderServiceInstance.list(id);
+      const { id } = req.user;
+      const { orderId } = req.params;
+      const response = await OrderServiceInstance.findById(orderId);
       res.status(200).send(response);
     } catch (error) {
       next(error);

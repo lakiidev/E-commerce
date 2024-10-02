@@ -36,7 +36,7 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
     try {
       await dispatch(loginUser(data)).unwrap();
       toast.success("Login successful");
-      if (pendingProduct) {
+      if (pendingProduct.cartItem) {
         if (
           pendingProduct?.cartItem?.id &&
           pendingProduct.cartItem?.name &&

@@ -7,14 +7,13 @@ axios.defaults.withCredentials = true;
 export const fetchOrders = async () => {
   try {
     const response = await axios.get(`orders`);
-
     return response.data;
   } catch (error: any) {
     throw error.response.data;
   }
 };
 
-export const fetchOrder = async (orderId: string) => {
+export const fetchOrder = async (orderId: number) => {
   try {
     const response = await axios.get(`orders/${orderId}`);
     return response.data;
