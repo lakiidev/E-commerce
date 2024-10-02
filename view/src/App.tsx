@@ -19,7 +19,7 @@ function App() {
 
   const fetchProducts = async () => {
     try {
-      const result = await dispatch(loadProducts());
+      await dispatch(loadProducts());
       await dispatch(loadCart());
     } catch (error) {
       toast.error("Failed to fetch products");

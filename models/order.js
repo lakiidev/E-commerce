@@ -44,13 +44,12 @@ module.exports = class OrderModel {
 
   static async findByUser(userId) {
     try {
-      const query = `SELECT * FROM orders WHER "userId= $1`;
+      const query = `SELECT * FROM orders WHERE userid = $1`;
       const params = [userId];
 
       const result = await db.query(query, params);
-
       if (result.rows?.length) {
-        return result.rows[0];
+        return result.rows;
       }
 
       return null;

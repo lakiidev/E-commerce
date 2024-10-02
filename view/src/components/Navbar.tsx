@@ -21,12 +21,12 @@ const Navbar: FC<NavbarProps> = ({}) => {
             </a>
           </li>
           <li>
-            <a className={linkStyle} href="">
+            <a className={linkStyle} href="/orders">
               Orders
             </a>
           </li>
           <li>
-            <a className={linkStyle} href="">
+            <a className={linkStyle} href="/profile">
               Profile
             </a>
           </li>

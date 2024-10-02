@@ -1,22 +1,24 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createOrder, fetchOrder, fetchOrders } from "../../controller/order";
 import { checkoutCart } from "../cartSlice/cartSlice";
+import { Order } from "../../types";
 
 const initialState = {
   orders: [
     {
-      id: "",
-      userid: "",
+      id: 0,
       total: 0,
       status: "",
       items: [],
+      createdat: new Date().toISOString(),
+      modifiedat: new Date().toISOString(),
     },
-  ],
+  ] as Order[],
 };
 
 export const loadOrder = createAsyncThunk(
   "order/loadOrder",
-  async (orderId: string, thunkAPI) => {
+  async (orderId: number, thunkAPI) => {
     try {
       const response = await fetchOrder(orderId);
       return {
@@ -47,7 +49,7 @@ export const createOrders = createAsyncThunk(
     try {
       const response = await createOrder(paymentIntentId);
       return {
-        orders: response,
+        order: response,
       };
     } catch (error) {
       throw error;
@@ -56,14 +58,14 @@ export const createOrders = createAsyncThunk(
 );
 
 const orderSlice = createSlice({
-  name: "order",
+  name: "orders",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(createOrders.fulfilled, (state, action) => {
-        const { orders } = action.payload;
-        state.orders.push(orders);
+        const { order } = action.payload;
+        state.orders.push(order);
       })
       .addCase(loadOrder.fulfilled, (state, action) => {
         const { order } = action.payload;
@@ -71,7 +73,7 @@ const orderSlice = createSlice({
       })
       .addCase(loadOrders.fulfilled, (state, action) => {
         const { orders } = action.payload;
-        console.log(orders);
+        state.orders = orders;
       });
   },
 });

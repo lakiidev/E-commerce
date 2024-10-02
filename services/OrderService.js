@@ -2,6 +2,7 @@ const { STRIPE_SECRET_KEY } = require("../config");
 
 const stripe = require("stripe")(STRIPE_SECRET_KEY);
 const OrderModel = require("../models/order");
+const OrderItemModel = require("../models/orderItem");
 const OrderItem = require("../models/orderItem");
 const CartService = require("./CartService");
 const CartServiceInstance = new CartService();
@@ -58,7 +59,15 @@ module.exports = class OrderService {
   async list(userId) {
     try {
       const orders = await OrderModel.findByUser(userId);
-      return orders;
+      const ordersWithItems = await Promise.all(
+        orders.map(async (order) => {
+          const items = await OrderItemModel.find(order.id);
+          order.items = items;
+          console.log("order", order);
+          return order;
+        })
+      );
+      return ordersWithItems;
     } catch (err) {
       throw err;
     }
@@ -67,6 +76,8 @@ module.exports = class OrderService {
   async findById(orderId) {
     try {
       const order = await OrderModel.findById(orderId);
+      const items = await OrderItemModel.find(orderId);
+      order.items = items;
       return order;
     } catch (err) {
       throw err;

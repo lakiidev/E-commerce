@@ -17,7 +17,7 @@ module.exports = (app) => {
     }
   });
 
-  router.put("/:roterId", async (req, res, next) => {
+  router.put("/:userId", async (req, res, next) => {
     try {
       const { userId } = req.params;
       const data = req.body;
