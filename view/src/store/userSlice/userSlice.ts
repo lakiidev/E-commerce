@@ -1,6 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { isLoggedIn, login, logout, register } from "../../controller/auth";
+import {
+  isLoggedIn,
+  login,
+  logout,
+  register,
+  update,
+} from "../../controller/auth";
 import axios from "axios";
+import { z } from "zod";
+import { profileSchema } from "../../validations/profile";
 export interface InitialState {
   isLoadingUser: boolean;
   isLoggedIn: boolean;
@@ -9,8 +17,8 @@ export interface InitialState {
     | {
         id: string;
         email: string;
-        firstName: string;
-        lastName: string;
+        firstname: string;
+        lastname: string;
       };
   error: string | null;
 }
@@ -38,6 +46,8 @@ interface LoginResponse {
   };
   isLoggedIn: boolean;
 }
+
+type profileData = z.infer<typeof profileSchema>;
 
 export const checkLoginStatus = createAsyncThunk(
   "auth/checkLogin",
@@ -109,6 +119,21 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (updatedFields: Partial<profileData>, { rejectWithValue }) => {
+    try {
+      const response = await update(updatedFields);
+      return response;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -124,7 +149,7 @@ export const userSlice = createSlice({
         const { isLoggedIn } = action.payload;
         state.isLoggedIn = isLoggedIn;
         const { user } = action.payload;
-        Object.assign(state, user);
+        state.user = user;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoadingUser = false;
@@ -158,6 +183,15 @@ export const userSlice = createSlice({
           "An unexpected error occurred";
         state.isLoggedIn = false;
         state.isLoadingUser = false;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = {
+          ...state.user,
+          ...action.payload,
+        };
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.error = action.payload || "An unexpected error occurred";
       });
   },
 });

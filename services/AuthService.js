@@ -11,6 +11,7 @@ module.exports = class AuthService {
         throw createError(409, "Email already in use");
       }
       const hashedPassword = await bcrypt.hash(password, 10);
+      data.password = hashedPassword;
       return await UserModelInstance.create(data);
     } catch (error) {
       throw createError(500, error);

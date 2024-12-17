@@ -1,7 +1,10 @@
 import axios from "axios";
+import { profileSchema } from "../validations/profile";
+import { z } from "zod";
 
 axios.defaults.baseURL = "http://localhost:3000/api";
 axios.defaults.withCredentials = true;
+type profileData = z.infer<typeof profileSchema>;
 
 export const login = async ({
   email,
@@ -45,6 +48,15 @@ export const register = async ({
       password,
     });
 
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const update = async (updatedFields: Partial<profileData>) => {
+  try {
+    const response = await axios.put("/users", updatedFields);
     return response.data;
   } catch (error) {
     throw error;
