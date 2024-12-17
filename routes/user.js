@@ -5,7 +5,7 @@ const UserService = require("../services/UserService");
 const UserServiceInstance = new UserService();
 
 module.exports = (app) => {
-  app.use("api/users", router);
+  app.use("/api/users", router);
 
   router.get("/:userId", async (req, res, next) => {
     try {
@@ -16,15 +16,10 @@ module.exports = (app) => {
       next(error);
     }
   });
-
-  router.put("/:userId", async (req, res, next) => {
+  router.put("/", async (req, res, next) => {
     try {
-      const { userId } = req.params;
-      const data = req.body;
-      const response = await UserServiceInstance.update({
-        id: userId,
-        ...data,
-      });
+      const { id } = req.user;
+      const response = await UserServiceInstance.update({ id, ...req.body });
       res.status(200).send(response);
     } catch (error) {
       next(error);

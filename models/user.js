@@ -17,13 +17,18 @@ module.exports = class UserModel {
   }
   async update(data) {
     try {
-      const { id, ...params } = data;
-
+      const { id, ...rawParams } = data;
+      const params = {
+        ...rawParams,
+        firstname: rawParams.firstName,
+        lastname: rawParams.lastName,
+        modifiedat: new Date(),
+      };
+      delete params.firstName;
+      delete params.lastName;
       const condition = pgp.as.format("WHERE id = ${id} RETURNING *", { id });
       const query = pgp.helpers.update(params, null, "users") + condition;
-
-      const result = db.query(query);
-
+      const result = await db.query(query);
       if (result.rows?.length) {
         return result.rows[0];
       }
