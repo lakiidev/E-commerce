@@ -35,15 +35,8 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
   const onSubmit = async (data: LoginData) => {
     try {
       await dispatch(loginUser(data)).unwrap();
-      toast.success("Login successful");
       if (pendingProduct.cartItem) {
-        if (
-          pendingProduct?.cartItem?.id &&
-          pendingProduct.cartItem?.name &&
-          pendingProduct.cartItem?.price &&
-          pendingProduct.cartItem?.image_url &&
-          pendingProduct.cartItem?.quantity
-        ) {
+        if (pendingProduct.cartItem?.quantity) {
           const item = {
             product: {
               ...pendingProduct.cartItem,

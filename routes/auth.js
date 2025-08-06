@@ -40,7 +40,18 @@ module.exports = (app, passport) => {
       }
     }
   );
+  router.post("/logout", async (req, res, next) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.status(200).send({ message: "Logged out successfully" });
+    });
+  });
   router.get("/checkUserStatus", async (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).send({ loggedIn: false });
+    }
     try {
       const { id } = req.user;
       const user = await UserServiceInstance.get({ id });
@@ -49,7 +60,6 @@ module.exports = (app, passport) => {
         await CartServiceInstance.create({ userId: id });
         const cart = await CartServiceInstance.loadCart(id);
       }
-
       res.status(200).send({
         cart,
         loggedIn: true,

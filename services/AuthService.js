@@ -12,6 +12,8 @@ module.exports = class AuthService {
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       data.password = hashedPassword;
+      data.createdat = new Date();
+      data.modifiedat = new Date();
       return await UserModelInstance.create(data);
     } catch (error) {
       throw createError(500, error);
