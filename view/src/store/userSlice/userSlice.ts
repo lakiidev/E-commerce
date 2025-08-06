@@ -9,6 +9,11 @@ import {
 import axios from "axios";
 import { z } from "zod";
 import { profileSchema } from "../../validations/profile";
+
+export interface EditErrorPayload {
+  message: string;
+}
+
 export interface InitialState {
   isLoadingUser: boolean;
   isLoggedIn: boolean;
@@ -126,10 +131,12 @@ export const updateProfile = createAsyncThunk(
       const response = await update(updatedFields);
       return response;
     } catch (error) {
-      if (error.response && error.response.data) {
-        return rejectWithValue(error.response.data.message);
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data) {
+          return rejectWithValue(error.response.data.message);
+        }
+        return rejectWithValue(error.message);
       }
-      return rejectWithValue(error.message);
     }
   }
 );
@@ -191,7 +198,14 @@ export const userSlice = createSlice({
         };
       })
       .addCase(updateProfile.rejected, (state, action) => {
-        state.error = action.payload || "An unexpected error occurred";
+        state.error =
+          (action.payload as EditErrorPayload)?.message ||
+          "An unexpected error occurred";
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.error =
+          (action.payload as EditErrorPayload)?.message ||
+          "An unexpected error occurred during logout";
       });
   },
 });

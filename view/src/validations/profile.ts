@@ -2,8 +2,16 @@ import z from "zod";
 
 export const profileSchema = z
   .object({
-    firstName: z.string().min(2, "First name must be at least 2 characters"),
-    lastName: z.string().min(2, "Last name must be at least 2 characters"),
+    firstName: z
+      .string()
+      .min(2, "First name must be at least 2 characters")
+      .nullish()
+      .optional(),
+    lastName: z
+      .string()
+      .min(2, "Last name must be at least 2 characters")
+      .nullish()
+      .optional(),
     email: z.string().email("Invalid email address"),
     oldPassword: z.string().optional(),
     newPassword: z
@@ -23,18 +31,6 @@ export const profileSchema = z
     {
       message: "Old password is required when setting a new password",
       path: ["oldPassword"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.oldPassword && !data.newPassword) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "New password is required when old password is provided",
-      path: ["newPassword"],
     }
   )
   .refine(

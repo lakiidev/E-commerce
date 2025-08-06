@@ -5,13 +5,12 @@ const moment = require("moment");
 
 module.exports = class CartModel {
   constructor(data = {}) {
-    this.cretatedAt = data.cretatedAt || moment.utc().toISOString();
-    this.modifiedAt = moment.utc().toISOString();
-    this.isActive = data.isActive || true;
+    this.createdat = data.createdAt || moment.utc().toISOString();
+    this.modifiedat = moment.utc().toISOString();
   }
   async create(userId) {
     try {
-      const data = { userId, ...this };
+      const data = { userid: userId, ...this };
       const query = pgp.helpers.insert(data, null, "carts");
       +"RETURNING *";
       const result = await db.query(query);

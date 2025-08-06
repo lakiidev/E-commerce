@@ -22,10 +22,17 @@ module.exports = class UserService {
   }
   async update(data) {
     try {
-      const { id, oldPassword, newPassword, ...params } = data;
+      const { id, oldPassword, newPassword, email, ...params } = data;
       const user = await UserModelInstance.findOneById(id);
       if (!user) {
         throw createError(404, "User record not found");
+      }
+      if (email && email !== user.email) {
+        const existingUser = await UserModelInstance.findOneByEmail(email);
+        if (existingUser) {
+          throw createError(400, "Email already in use");
+        }
+        params.email = email;
       }
       const isCorrectPassword = await bcrypt.compare(
         oldPassword,
